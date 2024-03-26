@@ -1,0 +1,21 @@
+variables:
+  VERSION: "0.0.${CI_PIPELINE_ID}"
+  IMAGE_NAME: "app-base-image"
+
+
+stages:
+  - build
+
+
+test:
+  image: docker:dind
+  stage: build
+  tags:
+    - saas-linux-small-amd64
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker compose build
+    - docker compose -f docker-compose-test.yaml up
+  services:
+    - docker:dind
+

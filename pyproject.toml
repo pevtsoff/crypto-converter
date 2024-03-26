@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "crypto-converter"
+version = "0.1.0"
+description = ""
+authors = ["Ivan Pevtsov <ipevtsov.contractor@libertyglobal.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+websockets = "^12.0"
+python-dotenv = "^1.0.1"
+click = "^8.1.7"
+redis = "^5.0.1"
+fastapi = "^0.109.0"
+uvicorn = "^0.27.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+httpx = "^0.26.0"
+deepdiff = "^6.7.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

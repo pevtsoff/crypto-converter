@@ -1,0 +1,2 @@
+class NoValidTickerAvailableForTicker(Exception):
+    pass

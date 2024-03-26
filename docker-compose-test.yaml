@@ -1,0 +1,28 @@
+version: '3.8'
+
+x-base-python: &x-base-python
+  build:
+    context: .
+    args:
+    - INSTALL_DIR=${INSTALL_DIR}
+  image: app-base-image:${TAG}
+  env_file: .env
+  working_dir: ${INSTALL_DIR}
+  restart: on-failure
+  volumes:
+    - .:/usr/src/app
+
+services:
+  test:
+    <<: *x-base-python
+    command: sh -c "pytest ."
+    container_name: api-${TAG}
+    environment:
+      - EXCHANGE_API_PORT=${EXCHANGE_API_PORT}
+      - PORT_PREFIX=${PORT_PREFIX}
+
+
+
+volumes:
+  postgresql-data:
+  crypto_broker_backend_logs:
