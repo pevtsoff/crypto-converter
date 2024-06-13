@@ -4,13 +4,32 @@ import time
 from decimal import Decimal, ROUND_HALF_EVEN, localcontext
 from typing import Any, Optional, Annotated
 from pydantic import BaseModel, Field, field_validator, model_validator
+
+from crypto_converter.clickhouse_db import Base
 from crypto_converter.common import configure_logger
 from crypto_converter.exceptions import NoValidTickerAvailableForTicker
+from sqlalchemy import Column
+from clickhouse_sqlalchemy import types, engines
+
 
 quote_price_precision = int(os.getenv("QUOTE_PRICE_PRECISION", 6))
 target_precision = int(os.getenv("QUOTE_TARGET_PRECISION", 12))
 ticker_expiration = int(os.getenv("TICKER_EXPIRATION_SEC", 60))
 logger = configure_logger(__name__)
+
+
+class Ticker(Base):
+    name = Column(types.Date, primary_key=True)
+    price = Column(types.Int32)
+    timestamp = Column(types.Date, primary_key=True)
+
+
+    __table_args__ = (
+        engines.Memory(),
+    )
+
+# Emits CREATE TABLE statement
+#Ticker.__table__.create()
 
 
 def quantize(value: Decimal, precision: int = quote_price_precision) -> Decimal:
@@ -73,6 +92,7 @@ class ExchangeResponse(BaseModel):
 
 
 class BinanceTicker(BaseModel):
+    name: str
     price: str
     timestamp: int
 
