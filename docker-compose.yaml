@@ -13,7 +13,7 @@ x-base-python: &x-base-python
     - redis
   restart: on-failure
   volumes:
-    - .:/usr/src/app
+    - .:${INSTALL_DIR}
 
 
 services:
@@ -40,6 +40,22 @@ services:
       - ./docker/redis/redis.conf:/etc/redis/redis.conf
     ports:
       - "6379:6379"
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8123:8123"  # HTTP interface
+      - "9000:9000"  # Native TCP interface
+      - "9009:9009"  # HTTP interface for metrics
+    volumes:
+      - ./volume:/var/lib/clickhouse/user_files
+    #    volumes:
+    #      - clickhouse_data:/var/lib/clickhouse
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ''
 
 volumes:
   postgresql-data:

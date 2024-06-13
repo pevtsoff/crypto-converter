@@ -22,7 +22,3 @@ services:
       - PORT_PREFIX=${PORT_PREFIX}
 
 
-
-volumes:
-  postgresql-data:
-  crypto_broker_backend_logs:
