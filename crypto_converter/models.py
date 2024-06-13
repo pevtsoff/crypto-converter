@@ -3,9 +3,7 @@ import os
 import time
 from decimal import Decimal, ROUND_HALF_EVEN, localcontext
 from typing import Any, Optional, Annotated
-
 from pydantic import BaseModel, Field, field_validator, model_validator
-
 from crypto_converter.common import configure_logger
 from crypto_converter.exceptions import NoValidTickerAvailableForTicker
 

@@ -25,8 +25,8 @@ binance_stream_url = binance_stream_base_url + binance_stream_name
 
 tickers = {}
 
-
-async def process_msg(message):
+async def flush_tickers_to_clickhouse():pass
+async def process_msg(message: dict) -> None:
     try:
         data = json.loads(message)
 
@@ -60,6 +60,8 @@ async def flush_tickers():
         start = time.time()
         tickers_copy = deepcopy(tickers)
         tickers.clear()
+
+        await flush_tickers_to_clickhouse()
 
         for tick_name, data in tickers_copy.items():
             await redis_client.hset(tick_name, key=None, value=None, mapping=data)
@@ -103,6 +105,7 @@ def quote_consumer_main():
 
     try:
         loop.run_forever()
+
     finally:
         loop.run_until_complete(loop.shutdown_asyncgens())
         loop.close()
