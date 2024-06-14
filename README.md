@@ -104,3 +104,9 @@ curl --location 'http://localhost:8000/exchange/' --header 'Content-Type: applic
 }'
 {"error":"Request failed: ('No valid ticker available for ticker %s', 'apebtc2')","status_code":503}
 ```
+
+## Clickhouse test
+```angular2html
+curl -d "SHOW TABLES" 'http://localhost:8123/'
+
+```
