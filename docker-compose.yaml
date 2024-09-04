@@ -41,6 +41,21 @@ services:
     ports:
       - "6379:6379"
 
+  postgres:
+    container_name: postgres-${TAG}
+    hostname: postgres
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+    restart: on-failure
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+      - ./db_backup:/db_backup
+
 volumes:
   postgresql-data:
   crypto_broker_backend_logs:
