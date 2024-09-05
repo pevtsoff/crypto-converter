@@ -106,7 +106,7 @@ def redis_mock():
 )
 def test_conversion_from(input_json, expected_json, redis_mock):
     with patch(
-        "crypto_converter.exchange_service.ExchangeService.get_ticker_from_redis",
+        "crypto_converter.exchange_api.exchange_service.ExchangeService.get_ticker_from_redis",
         side_effect=get_ticker_from_redis_mock,
     ):
         with TestClient(app) as client:
@@ -136,7 +136,7 @@ def test_conversion_from(input_json, expected_json, redis_mock):
                         "msg": "Decimal input should have no more than 6 decimal places",
                         "input": 0.1111111,
                         "ctx": {"decimal_places": 6},
-                        "url": "https://errors.pydantic.dev/2.5/v/decimal_max_places",
+                        "url": "https://errors.pydantic.dev/2.8/v/decimal_max_places",
                     }
                 ]
             },
@@ -151,7 +151,7 @@ def test_conversion_from(input_json, expected_json, redis_mock):
                         "msg": "Value error, amount_from or amount_to should be passed",
                         "input": {"from": "btc", "to": "usdt", "amount_from": 0},
                         "ctx": {"error": {}},
-                        "url": "https://errors.pydantic.dev/2.5/v/value_error",
+                        "url": "https://errors.pydantic.dev/2.8/v/value_error",
                     }
                 ]
             },
@@ -166,7 +166,7 @@ def test_conversion_from(input_json, expected_json, redis_mock):
                         "msg": "Decimal input should have no more than 6 decimal places",
                         "input": 0.1111111,
                         "ctx": {"decimal_places": 6},
-                        "url": "https://errors.pydantic.dev/2.5/v/decimal_max_places",
+                        "url": "https://errors.pydantic.dev/2.8/v/decimal_max_places",
                     }
                 ]
             },
@@ -181,7 +181,7 @@ def test_conversion_from(input_json, expected_json, redis_mock):
                         "msg": "Value error, amount_from or amount_to should be passed",
                         "input": {"from": "btc", "to": "usdt", "amount_to": 0},
                         "ctx": {"error": {}},
-                        "url": "https://errors.pydantic.dev/2.5/v/value_error",
+                        "url": "https://errors.pydantic.dev/2.8/v/value_error",
                     }
                 ]
             },
@@ -190,7 +190,7 @@ def test_conversion_from(input_json, expected_json, redis_mock):
 )
 def test_conversion_from_negative(input_json, expected_json, redis_mock):
     with patch(
-        "crypto_converter.exchange_service.ExchangeService.get_ticker_from_redis",
+        "crypto_converter.exchange_api.exchange_service.ExchangeService.get_ticker_from_redis",
         side_effect=get_ticker_from_redis_mock,
     ):
         with TestClient(app) as client:
