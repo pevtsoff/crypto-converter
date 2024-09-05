@@ -1,11 +1,13 @@
 import os
 from contextlib import asynccontextmanager
+from typing import AsyncIterator
 
 import uvicorn
 from fastapi import FastAPI, APIRouter, Depends
 from fastapi.encoders import decimal_encoder
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from crypto_converter.db import sessionmanager
+from crypto_converter.db import sessionmanager, get_db_session
 from crypto_converter.exchange_service import ExchangeService
 from crypto_converter.exception_handlers import common_exception_handler
 from crypto_converter.models import ExchangeResponse, ExchangeBid
@@ -20,6 +22,7 @@ router = APIRouter(prefix="/exchange", tags=["exchange"])
 async def exchange_currency(
     exchange_bid: ExchangeBid,
     service: ExchangeService = Depends(),
+    #db_session: AsyncIterator[AsyncSession] = Depends(get_db_session)
 ):
     data = await service.exchange(exchange_bid)
     return data

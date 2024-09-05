@@ -3,12 +3,19 @@ import os
 import sys
 import time
 from copy import deepcopy
+from typing import AsyncIterator
 
 from dotenv import load_dotenv
 import websockets
 import json
+
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from crypto_converter.common import configure_logger, repeat, connect_to_redis
+from crypto_converter.db import get_db_session
 from crypto_converter.models import BinanceTicker
+from crypto_converter.db_models import BinanceTickerModel
 
 
 load_dotenv()
@@ -56,12 +63,13 @@ async def flush_tickers():
     redis_client = await connect_to_redis()
 
     if tickers:
-        logger.warning("Flushing  ticker to redis %s", len(tickers))
+        logger.warning("Flushing '%s' ticker to redis ", len(tickers))
         start = time.time()
         tickers_copy = deepcopy(tickers)
         tickers.clear()
-
+        await flush_tickers_to_db(tickers_copy)
         for tick_name, data in tickers_copy.items():
+            print(f"{data=}")
             await redis_client.hset(tick_name, key=None, value=None, mapping=data)
             # doing simple expiry per every ticker
             await redis_client.expire(tick_name, redis_expiry_time)
@@ -71,6 +79,19 @@ async def flush_tickers():
 
     else:
         logger.warning("No tickers to flush")
+
+async def flush_tickers_to_db(tickers: list):
+    session = await get_db_session().__anext__()
+    async with session:
+        for tick_name, data in tickers.items():
+            ticker = BinanceTickerModel(
+                ticker_name=data['ticker_name'],
+                price=data['price'],
+                timestamp=data['timestamp'],
+            )
+            session.add(ticker)
+
+        await session.commit()
 
 
 async def connect_to_binance():

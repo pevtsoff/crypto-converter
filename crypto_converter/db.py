@@ -1,20 +1,18 @@
 import contextlib
 from typing import Any, AsyncIterator
 
-
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, Session
 
 from crypto_converter.settings import PG_URL, SQL_DEBUG
 
 Base = declarative_base()
-
-# Heavily inspired by https://praciano.com.br/fastapi-and-async-sqlalchemy-20-with-pytest-done-right.html
 
 
 class DatabaseSessionManager:
@@ -53,13 +51,14 @@ class DatabaseSessionManager:
         except Exception:
             await session.rollback()
             raise
-        finally:
-            await session.close()
+        # finally:
+        #     await session.close()
 
 
 sessionmanager = DatabaseSessionManager(PG_URL, {"echo": SQL_DEBUG})
 
 
-async def get_db_session():
+async def get_db_session() -> AsyncIterator[AsyncSession]:
     async with sessionmanager.session() as session:
         yield session
+
