@@ -12,6 +12,8 @@ x-base-python: &x-base-python
   depends_on:
     - redis
   restart: on-failure
+  networks:
+    - main
   volumes:
     - .:/usr/src/app
 
@@ -36,6 +38,8 @@ services:
   redis:
     image: redis:latest
     command: "redis-server /etc/redis/redis.conf"
+    networks:
+      - main
     volumes:
       - ./docker/redis/redis.conf:/etc/redis/redis.conf
     ports:
@@ -45,6 +49,8 @@ services:
     container_name: postgres-${TAG}
     hostname: postgres
     image: postgres:latest
+    networks:
+      - main
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -53,9 +59,13 @@ services:
       - "5432:5432"
     restart: on-failure
     volumes:
-      - postgresql-data:/var/lib/postgresql/data
+      - postgresql-data-crypto-converter:/var/lib/postgresql/data
       - ./db_backup:/db_backup
 
+
+networks:
+  main:
+
+
 volumes:
-  postgresql-data:
-  crypto_broker_backend_logs:
+  postgresql-data-crypto-converter:

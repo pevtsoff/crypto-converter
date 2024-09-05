@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import os
 from redis.asyncio.retry import Retry
 from redis.backoff import ExponentialBackoff
 from redis.exceptions import (
@@ -11,17 +10,8 @@ from redis.exceptions import (
 import redis.asyncio as redis
 import redis as sync_redis
 
+from crypto_converter.settings import LOG_FORMAT, LOG_LEVEL, REDIS_HOST, REDIS_PORT
 
-LOG_FORMAT = os.getenv(
-    "LOG_FORMAT",
-    "%(asctime)-15s %(name)s [%(levelname)s] %(filename)s:%(lineno)d  %(message)s",
-)
-LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG")
-
-
-redis_host = os.getenv("REDIS_HOST", "redis")
-redis_port = int(os.getenv("REDIS_PORT", 6379))
-redis_tickers_key = os.getenv("REDIS_TICKERS_KEY", "tickers")
 retry = Retry(ExponentialBackoff(), 3)
 
 
@@ -53,8 +43,8 @@ async def repeat(interval, func, *args, **kwargs):
 async def connect_to_redis():
     try:
         redis_client = await redis.StrictRedis(
-            host=redis_host,
-            port=redis_port,
+            host=REDIS_HOST,
+            port=REDIS_PORT,
             retry=retry,
             retry_on_error=[BusyLoadingError, ConnectionError, redisTimeoutError],
         )
