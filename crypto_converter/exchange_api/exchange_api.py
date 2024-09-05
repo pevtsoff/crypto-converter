@@ -16,7 +16,6 @@ router = APIRouter(prefix="/exchange", tags=["exchange"])
 async def exchange_currency(
     exchange_bid: ExchangeBid,
     service: ExchangeService = Depends(),
-    # db_session: AsyncIterator[AsyncSession] = Depends(get_db_session)
 ):
     data = await service.exchange(exchange_bid)
     return data

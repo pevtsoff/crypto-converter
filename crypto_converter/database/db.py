@@ -9,8 +9,13 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import declarative_base
 
+from crypto_converter.common.common import configure_logger
 from crypto_converter.common.settings import PG_URL, SQL_DEBUG
 
+
+
+logger = configure_logger(__name__)
+logger.info("Connecting to database...")
 Base = declarative_base()
 
 
@@ -45,14 +50,13 @@ class DatabaseSessionManager:
             raise Exception("DatabaseSessionManager is not initialized")
 
         session = self._sessionmaker()
+
         try:
             yield session
         except Exception:
+            logger.warning(f'rolling back')
             await session.rollback()
             raise
-        # finally:
-        #     await session.close()
-
 
 sessionmanager = DatabaseSessionManager(PG_URL, {"echo": SQL_DEBUG})
 
@@ -60,3 +64,14 @@ sessionmanager = DatabaseSessionManager(PG_URL, {"echo": SQL_DEBUG})
 async def get_db_session() -> AsyncIterator[AsyncSession]:
     async with sessionmanager.session() as session:
         yield session
+
+
+# engine = create_async_engine(
+#     PG_URL,
+#     query_cache_size=0,
+#     echo=True
+# )
+# async def get_db_session() -> AsyncIterator[AsyncSession]:
+#     async_session = async_sessionmaker(autocommit=False, autoflush=True, bind=engine, class_=AsyncSession, expire_on_commit=False)
+#     async with async_session() as session:
+#         yield session
