@@ -75,6 +75,7 @@ class ExchangeResponse(BaseModel):
 
 
 class BinanceTicker(BaseModel):
+    ticker_name: str
     price: str
     timestamp: int
 

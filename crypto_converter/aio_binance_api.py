@@ -42,7 +42,7 @@ async def process_msg(message):
                 price = ticker["c"]
                 event_time = ticker["E"]
                 tickers[symbol] = BinanceTicker(
-                    **{"price": price, "timestamp": event_time}
+                    **{"ticker_name":symbol, "price": price, "timestamp": event_time}
                 ).model_dump()
 
             logger.warning(
