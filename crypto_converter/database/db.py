@@ -1,16 +1,15 @@
 import contextlib
 from typing import Any, AsyncIterator
 
-from fastapi import Depends
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import declarative_base, Session
+from sqlalchemy.orm import declarative_base
 
-from crypto_converter.settings import PG_URL, SQL_DEBUG
+from crypto_converter.common.settings import PG_URL, SQL_DEBUG
 
 Base = declarative_base()
 

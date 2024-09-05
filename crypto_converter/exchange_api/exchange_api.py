@@ -1,20 +1,14 @@
-import os
 from contextlib import asynccontextmanager
-from typing import AsyncIterator
-
 import uvicorn
 from fastapi import FastAPI, APIRouter, Depends
 from fastapi.encoders import decimal_encoder
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from crypto_converter.db import sessionmanager, get_db_session
-from crypto_converter.exchange_service import ExchangeService
-from crypto_converter.exception_handlers import common_exception_handler
-from crypto_converter.models import ExchangeResponse, ExchangeBid
+from crypto_converter.database.db import sessionmanager
+from crypto_converter.exchange_api.exchange_service import ExchangeService
+from crypto_converter.common.exception_handlers import common_exception_handler
+from crypto_converter.common.models import ExchangeResponse, ExchangeBid
 
 
-exchange_api_host = os.getenv("EXCHANGE_API_HOST", "0.0.0.0")
-exchange_api_port = os.getenv("EXCHANGE_API_PORT", 8000)
 router = APIRouter(prefix="/exchange", tags=["exchange"])
 
 

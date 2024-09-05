@@ -3,8 +3,8 @@ from http import HTTPStatus
 from fastapi import Request
 from pydantic import ValidationError
 from fastapi.encoders import jsonable_encoder
-from crypto_converter.common import configure_logger
-from crypto_converter.exceptions import NoValidTickerAvailableForTicker
+from crypto_converter.common.common import configure_logger
+from crypto_converter.common.exceptions import NoValidTickerAvailableForTicker
 
 logger = configure_logger(__name__)
 

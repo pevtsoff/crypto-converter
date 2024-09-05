@@ -6,8 +6,8 @@ from typing import Any, Optional, Annotated
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-from crypto_converter.common import configure_logger
-from crypto_converter.exceptions import NoValidTickerAvailableForTicker
+from crypto_converter.common.common import configure_logger
+from crypto_converter.common.exceptions import NoValidTickerAvailableForTicker
 
 quote_price_precision = int(os.getenv("QUOTE_PRICE_PRECISION", 6))
 target_precision = int(os.getenv("QUOTE_TARGET_PRECISION", 12))

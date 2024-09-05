@@ -1,9 +1,9 @@
 from decimal import localcontext
 from fastapi import Depends
 from redis import StrictRedis
-from crypto_converter.common import connect_to_redis
-from crypto_converter.exceptions import NoValidTickerAvailableForTicker
-from crypto_converter.models import (
+from crypto_converter.common.common import connect_to_redis
+from crypto_converter.common.exceptions import NoValidTickerAvailableForTicker
+from crypto_converter.common.models import (
     ExchangeResponse,
     ExchangeBid,
     BinanceTicker,

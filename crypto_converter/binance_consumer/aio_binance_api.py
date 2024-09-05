@@ -3,33 +3,18 @@ import os
 import sys
 import time
 from copy import deepcopy
-from typing import AsyncIterator
 
 from dotenv import load_dotenv
 import websockets
 import json
 
-from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from crypto_converter.common.common import configure_logger, repeat, connect_to_redis
+from crypto_converter.common.settings import REDIS_EXPIRY_TIME, BINANCE_STREAM_URL, REDIS_FLUSH_TIMEOUT
+from crypto_converter.database.db import get_db_session
+from crypto_converter.common.models import BinanceTicker
+from crypto_converter.database.db_models import BinanceTickerModel
 
-from crypto_converter.common import configure_logger, repeat, connect_to_redis
-from crypto_converter.db import get_db_session
-from crypto_converter.models import BinanceTicker
-from crypto_converter.db_models import BinanceTickerModel
-
-
-load_dotenv()
 logger = configure_logger(__name__)
-
-redis_flush_timeout = int(os.getenv("REDIS_FLUSH_TIMEOUT", 30))
-redis_expiry_time = int(os.getenv("REDIS_EXPIRY_TIME", 3600))
-
-binance_stream_name = os.getenv("BINANCE_STREAM_NAME", "")
-binance_stream_base_url = os.getenv(
-    "BINANCE_STREAM_BASE_URL", "wss://stream.binance.com:9443/stream?streams="
-)
-binance_stream_url = binance_stream_base_url + binance_stream_name
-
 tickers = {}
 
 
@@ -72,7 +57,7 @@ async def flush_tickers():
             print(f"{data=}")
             await redis_client.hset(tick_name, key=None, value=None, mapping=data)
             # doing simple expiry per every ticker
-            await redis_client.expire(tick_name, redis_expiry_time)
+            await redis_client.expire(tick_name, REDIS_EXPIRY_TIME)
 
         end = time.time()
         logger.warning(f"It took {end - start} seconds to flush tickers to redis")
@@ -95,7 +80,7 @@ async def flush_tickers_to_db(tickers: list):
 
 
 async def connect_to_binance():
-    uri = binance_stream_url
+    uri = BINANCE_STREAM_URL
     try:
         async with websockets.connect(uri) as ws:
             logger.warning("Connected to Binance websocket stream")
@@ -120,7 +105,7 @@ async def connect_to_binance():
 def quote_consumer_main():
     loop = asyncio.get_event_loop()
     loop.create_task(connect_to_binance())
-    loop.create_task(repeat(redis_flush_timeout, flush_tickers))
+    loop.create_task(repeat(REDIS_FLUSH_TIMEOUT, flush_tickers))
 
     try:
         loop.run_forever()

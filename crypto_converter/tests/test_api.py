@@ -3,8 +3,8 @@ import time
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch, AsyncMock
-from crypto_converter.exchange_api import create_fastapi_app
-from crypto_converter.models import BinanceTicker
+from crypto_converter.exchange_api.exchange_api import create_fastapi_app
+from crypto_converter.common.models import BinanceTicker
 from deepdiff import DeepDiff
 
 

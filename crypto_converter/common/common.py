@@ -10,7 +10,7 @@ from redis.exceptions import (
 import redis.asyncio as redis
 import redis as sync_redis
 
-from crypto_converter.settings import LOG_FORMAT, LOG_LEVEL, REDIS_HOST, REDIS_PORT
+from crypto_converter.common.settings import LOG_FORMAT, LOG_LEVEL, REDIS_HOST, REDIS_PORT
 
 retry = Retry(ExponentialBackoff(), 3)
 
