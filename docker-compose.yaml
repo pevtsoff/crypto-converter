@@ -57,7 +57,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
     ports:
-      - "5432:5432"
+      - "${PORT_PREFIX}432:5432"
     restart: on-failure
     volumes:
       - postgresql-data-crypto-converter:/var/lib/postgresql/data

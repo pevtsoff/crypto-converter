@@ -102,3 +102,14 @@ curl --location 'http://localhost:8000/exchange/' --header 'Content-Type: applic
 }'
 {"error":"Request failed: ('No valid ticker available for ticker %s', 'apebtc2')","status_code":503}
 ```
+
+## How to add alembic to the local project
+```angular2html
+1. run
+ alembic init --template async ./alembic
+2. Declare sqlalchemy's declarative Base in the code
+3. import Base to alembics env.py Base and add Base.metadata target_metadata
+4. Run to create the very first migration 
+ docker compose exec api alembic revision --autogenerate -m "your message here"
+5. docker compose exec api alembic upgrade
+```
