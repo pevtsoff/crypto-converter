@@ -60,4 +60,3 @@ sessionmanager = DatabaseSessionManager(PG_URL, {"echo": SQL_DEBUG})
 async def get_db_session() -> AsyncIterator[AsyncSession]:
     async with sessionmanager.session() as session:
         yield session
-

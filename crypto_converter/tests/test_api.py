@@ -10,7 +10,9 @@ from deepdiff import DeepDiff
 
 app = create_fastapi_app()
 
-ticker_obj = BinanceTicker(ticker_name="btsusdt", price="43192.111223345675", timestamp=int(time.time()))
+ticker_obj = BinanceTicker(
+    ticker_name="btsusdt", price="43192.111223345675", timestamp=int(time.time())
+)
 
 
 async def get_ticker_from_redis_mock(*args, **kwargs) -> BinanceTicker:

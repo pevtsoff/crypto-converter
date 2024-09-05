@@ -16,11 +16,10 @@ router = APIRouter(prefix="/exchange", tags=["exchange"])
 async def exchange_currency(
     exchange_bid: ExchangeBid,
     service: ExchangeService = Depends(),
-    #db_session: AsyncIterator[AsyncSession] = Depends(get_db_session)
+    # db_session: AsyncIterator[AsyncSession] = Depends(get_db_session)
 ):
     data = await service.exchange(exchange_bid)
     return data
-
 
 
 @asynccontextmanager
@@ -41,7 +40,7 @@ def create_fastapi_app():
         description="Converts the Crypto using Binance rates",
         version="1.0.0.",
         json_encode=decimal_encoder,
-        lifespan=lifespan
+        lifespan=lifespan,
     )
     app.include_router(router)
     app.add_exception_handler(Exception, common_exception_handler)

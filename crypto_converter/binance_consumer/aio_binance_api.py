@@ -9,7 +9,11 @@ import websockets
 import json
 
 from crypto_converter.common.common import configure_logger, repeat, connect_to_redis
-from crypto_converter.common.settings import REDIS_EXPIRY_TIME, BINANCE_STREAM_URL, REDIS_FLUSH_TIMEOUT
+from crypto_converter.common.settings import (
+    REDIS_EXPIRY_TIME,
+    BINANCE_STREAM_URL,
+    REDIS_FLUSH_TIMEOUT,
+)
 from crypto_converter.database.db import get_db_session
 from crypto_converter.common.models import BinanceTicker
 from crypto_converter.database.db_models import BinanceTickerModel
@@ -34,7 +38,7 @@ async def process_msg(message):
                 price = ticker["c"]
                 event_time = ticker["E"]
                 tickers[symbol] = BinanceTicker(
-                    **{"ticker_name":symbol, "price": price, "timestamp": event_time}
+                    **{"ticker_name": symbol, "price": price, "timestamp": event_time}
                 ).model_dump()
 
             logger.warning(
@@ -65,14 +69,15 @@ async def flush_tickers():
     else:
         logger.warning("No tickers to flush")
 
+
 async def flush_tickers_to_db(tickers: list):
     session = await get_db_session().__anext__()
     async with session:
         for tick_name, data in tickers.items():
             ticker = BinanceTickerModel(
-                ticker_name=data['ticker_name'],
-                price=data['price'],
-                timestamp=data['timestamp'],
+                ticker_name=data["ticker_name"],
+                price=data["price"],
+                timestamp=data["timestamp"],
             )
             session.add(ticker)
 
