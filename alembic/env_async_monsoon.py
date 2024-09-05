@@ -1,10 +1,13 @@
-import os, sys
 import asyncio
+import os
+import sys
 from logging.config import fileConfig
-from alembic import context
-from sqlalchemy.ext.asyncio import create_async_engine
+
 from app.settings import settings
 from app.tables import Base
+from sqlalchemy.ext.asyncio import create_async_engine
+
+from alembic import context
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)

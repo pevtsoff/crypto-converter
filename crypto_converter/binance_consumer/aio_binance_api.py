@@ -1,21 +1,21 @@
 import asyncio
+import json
 import os
 import sys
 import time
 from copy import deepcopy
 
-from dotenv import load_dotenv
 import websockets
-import json
+from dotenv import load_dotenv
 
-from crypto_converter.common.common import configure_logger, repeat, connect_to_redis
+from crypto_converter.common.common import configure_logger, connect_to_redis, repeat
+from crypto_converter.common.models import BinanceTicker
 from crypto_converter.common.settings import (
-    REDIS_EXPIRY_TIME,
     BINANCE_STREAM_URL,
+    REDIS_EXPIRY_TIME,
     REDIS_FLUSH_TIMEOUT,
 )
 from crypto_converter.database.db import get_db_session
-from crypto_converter.common.models import BinanceTicker
 from crypto_converter.database.db_models import BinanceTickerModel
 
 logger = configure_logger(__name__)

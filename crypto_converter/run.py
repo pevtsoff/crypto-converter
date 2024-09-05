@@ -1,4 +1,5 @@
 import click
+
 from crypto_converter.binance_consumer.aio_binance_api import quote_consumer_main
 from crypto_converter.exchange_api.exchange_api import start_exchange_api
 

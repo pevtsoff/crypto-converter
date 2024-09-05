@@ -1,14 +1,12 @@
 import asyncio
 import logging
+
+import redis as sync_redis
+import redis.asyncio as redis
 from redis.asyncio.retry import Retry
 from redis.backoff import ExponentialBackoff
-from redis.exceptions import (
-    BusyLoadingError,
-    ConnectionError,
-    TimeoutError as redisTimeoutError,
-)
-import redis.asyncio as redis
-import redis as sync_redis
+from redis.exceptions import BusyLoadingError, ConnectionError
+from redis.exceptions import TimeoutError as redisTimeoutError
 
 from crypto_converter.common.settings import (
     LOG_FORMAT,

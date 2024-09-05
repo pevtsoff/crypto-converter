@@ -1,6 +1,6 @@
 from pip._vendor.rich.table import Column
-from sqlalchemy.orm import declarative_base, Mapped, mapped_column
-from sqlalchemy import String, BigInteger
+from sqlalchemy import BigInteger, String
+from sqlalchemy.orm import Mapped, declarative_base, mapped_column
 
 Base = declarative_base()
 

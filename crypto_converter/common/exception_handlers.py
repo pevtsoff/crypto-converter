@@ -1,8 +1,10 @@
-from fastapi.responses import JSONResponse
 from http import HTTPStatus
+
 from fastapi import Request
-from pydantic import ValidationError
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from pydantic import ValidationError
+
 from crypto_converter.common.common import configure_logger
 from crypto_converter.common.exceptions import NoValidTickerAvailableForTicker
 
