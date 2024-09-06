@@ -1,6 +1,5 @@
 import contextlib
 from typing import Any, AsyncIterator
-
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
     AsyncSession,
@@ -8,10 +7,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import declarative_base
-
 from crypto_converter.common.common import configure_logger
 from crypto_converter.common.settings import PG_URL, SQL_DEBUG
-
 
 
 logger = configure_logger(__name__)
@@ -54,24 +51,14 @@ class DatabaseSessionManager:
         try:
             yield session
         except Exception:
-            logger.warning(f'rolling back')
+            logger.exception(f'rolling back transaction')
             await session.rollback()
             raise
 
-sessionmanager = DatabaseSessionManager(PG_URL, {"echo": SQL_DEBUG})
 
+sessionmanager = DatabaseSessionManager(PG_URL, {"echo": SQL_DEBUG})
 
 async def get_db_session() -> AsyncIterator[AsyncSession]:
     async with sessionmanager.session() as session:
         yield session
 
-
-# engine = create_async_engine(
-#     PG_URL,
-#     query_cache_size=0,
-#     echo=True
-# )
-# async def get_db_session() -> AsyncIterator[AsyncSession]:
-#     async_session = async_sessionmaker(autocommit=False, autoflush=True, bind=engine, class_=AsyncSession, expire_on_commit=False)
-#     async with async_session() as session:
-#         yield session
