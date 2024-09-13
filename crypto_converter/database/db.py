@@ -29,11 +29,17 @@ async_session = async_sessionmaker(
 
 async def get_db_session() -> AsyncSession:
     db = async_session()
+    yield db
 
-    try:
-        yield db
-    finally:
-        await db.close()
+
+# fastapi option
+# async def get_db_session() -> AsyncSession:
+#     db = async_session()
+#     try:
+#         yield db
+#     finally:
+#         await db.close()
+
 
 @asynccontextmanager
 async def transaction(db: AsyncSession) -> AsyncGenerator[None, None]:
