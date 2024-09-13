@@ -1,12 +1,8 @@
-from contextlib import asynccontextmanager
-
 import uvicorn
 from fastapi import APIRouter, Depends, FastAPI
 from fastapi.encoders import decimal_encoder
-
 from crypto_converter.common.exception_handlers import common_exception_handler
 from crypto_converter.common.models import ExchangeBid, ExchangeResponse
-from crypto_converter.database.db import sessionmanager
 from crypto_converter.exchange_api.exchange_service import ExchangeService
 
 router = APIRouter(prefix="/exchange", tags=["exchange"])
@@ -21,17 +17,6 @@ async def exchange_currency(
     return data
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-    Function that handles startup and shutdown events.
-    To understand more, read https://fastapi.tiangolo.com/advanced/events/
-    """
-    yield
-    if sessionmanager._engine is not None:
-        # Close the DB connection
-        await sessionmanager.close()
-
 
 def create_fastapi_app():
     app = FastAPI(
@@ -39,7 +24,6 @@ def create_fastapi_app():
         description="Converts the Crypto using Binance rates",
         version="1.0.0.",
         json_encode=decimal_encoder,
-        lifespan=lifespan,
     )
     app.include_router(router)
     app.add_exception_handler(Exception, common_exception_handler)

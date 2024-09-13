@@ -1,7 +1,6 @@
-import contextlib
-from typing import Any, AsyncIterator
+from contextlib import asynccontextmanager
+from typing import Any, AsyncIterator, AsyncGenerator
 from sqlalchemy.ext.asyncio import (
-    AsyncConnection,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
@@ -15,50 +14,41 @@ logger = configure_logger(__name__)
 logger.info("Connecting to database...")
 Base = declarative_base()
 
+logger.info("Connecting to database...")
+engine = create_async_engine(
+    PG_URL,
+    query_cache_size=0,
+    echo=SQL_DEBUG
+)
 
-class DatabaseSessionManager:
-    def __init__(self, host: str, engine_kwargs: dict[str, Any] = {}):
-        self._engine = create_async_engine(host, **engine_kwargs)
-        self._sessionmaker = async_sessionmaker(autocommit=False, bind=self._engine)
 
-    async def close(self):
-        if self._engine is None:
-            raise Exception("DatabaseSessionManager is not initialized")
-        await self._engine.dispose()
+async_session = async_sessionmaker(
+    engine, expire_on_commit=False, class_=AsyncSession, future=True, autoflush=False
+)
 
-        self._engine = None
-        self._sessionmaker = None
 
-    @contextlib.asynccontextmanager
-    async def connect(self) -> AsyncIterator[AsyncConnection]:
-        if self._engine is None:
-            raise Exception("DatabaseSessionManager is not initialized")
+async def get_db_session() -> AsyncSession:
+    db = async_session()
 
-        async with self._engine.begin() as connection:
-            try:
-                yield connection
-            except Exception:
-                await connection.rollback()
-                raise
+    try:
+        yield db
+    finally:
+        await db.close()
 
-    @contextlib.asynccontextmanager
-    async def session(self) -> AsyncIterator[AsyncSession]:
-        if self._sessionmaker is None:
-            raise Exception("DatabaseSessionManager is not initialized")
-
-        session = self._sessionmaker()
-
+@asynccontextmanager
+async def transaction(db: AsyncSession) -> AsyncGenerator[None, None]:
+    if not db.in_transaction():
+        async with db.begin():
+            logger.debug("explicit transaction begin")
+            yield
+        logger.debug("explicit transaction commit")
+    else:
+        logger.debug("already in transaction")
         try:
-            yield session
+            yield
         except Exception:
-            logger.exception(f'rolling back transaction')
-            await session.rollback()
+            await db.rollback()
             raise
-
-
-sessionmanager = DatabaseSessionManager(PG_URL, {"echo": SQL_DEBUG})
-
-async def get_db_session() -> AsyncIterator[AsyncSession]:
-    async with sessionmanager.session() as session:
-        yield session
-
+        if db.in_transaction():
+            await db.commit()
+            logger.debug("implicit transaction commit")

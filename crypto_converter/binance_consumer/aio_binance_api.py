@@ -15,7 +15,7 @@ from crypto_converter.common.settings import (
     REDIS_EXPIRY_TIME,
     REDIS_FLUSH_TIMEOUT,
 )
-from crypto_converter.database.db import get_db_session
+from crypto_converter.database.db import get_db_session, transaction
 from crypto_converter.database.db_models import BinanceTickerModel
 
 logger = configure_logger(__name__)
@@ -71,17 +71,20 @@ async def flush_tickers():
 
 
 async def flush_tickers_to_db(tickers: list):
-    session = await get_db_session().__anext__()
-    async with session:
-        for tick_name, data in tickers.items():
-            ticker = BinanceTickerModel(
-                ticker_name=data["ticker_name"],
-                price=data["price"],
-                timestamp=data["timestamp"],
-            )
-            session.add(ticker)
+    session = await anext(get_db_session())
 
-        await session.commit()
+    async with transaction(session):
+        for tick_name, data in tickers.items():
+            if data["ticker_name"]:
+
+                ticker = BinanceTickerModel(
+                    ticker_name=data["ticker_name"],
+                    price=data["price"],
+                    timestamp=data["timestamp"],
+                )
+                session.add(ticker)
+
+
 
 
 async def connect_to_binance():

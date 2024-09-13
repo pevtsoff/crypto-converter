@@ -11,6 +11,7 @@ x-base-python: &x-base-python
   working_dir: ${INSTALL_DIR}
   depends_on:
     - redis
+    - postgres
   restart: on-failure
   networks:
     - main
