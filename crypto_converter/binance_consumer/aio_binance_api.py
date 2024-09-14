@@ -56,14 +56,16 @@ async def flush_tickers():
         start = time.time()
         tickers_copy = deepcopy(tickers)
         tickers.clear()
+
         await flush_tickers_to_db(tickers_copy)
+
         for tick_name, data in tickers_copy.items():
             await redis_client.hset(tick_name, key=None, value=None, mapping=data)
             # doing simple expiry per every ticker
             await redis_client.expire(tick_name, REDIS_EXPIRY_TIME)
 
         end = time.time()
-        logger.warning(f"It took {end - start} seconds to flush tickers to redis")
+        logger.warning(f"It took {end - start} seconds to flush {tickers_copy.__len__()} tickers to redis")
 
     else:
         logger.warning("No tickers to flush")
@@ -71,6 +73,7 @@ async def flush_tickers():
 
 async def flush_tickers_to_db(tickers: list):
     tickers_objects = []
+    start = time.time()
     async with get_db_session() as session,  transaction(session):
         for tick_name, data in tickers.items():
             if data["ticker_name"]:
@@ -83,9 +86,11 @@ async def flush_tickers_to_db(tickers: list):
                 session.add(ticker)
                 tickers_objects.append(ticker)
 
+    end = time.time()
+    logger.info(f'it took {end - start} seconds to flush {tickers.__len__()} tickers to database')
 
-    for ticker in tickers_objects:
-        logger.warning(f"Saved ticker {ticker.id}")
+    # for ticker in tickers_objects:
+    #     logger.warning(f"Saved ticker {ticker.id}")
 
 
 async def connect_to_binance():
