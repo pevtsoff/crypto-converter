@@ -12,9 +12,8 @@ from crypto_converter.common.settings import PG_URL, SQL_DEBUG
 
 logger = configure_logger(__name__)
 logger.info("Connecting to database...")
-Base = declarative_base()
 
-logger.info("Connecting to database...")
+Base = declarative_base()
 engine = create_async_engine(
     PG_URL,
     query_cache_size=0,
@@ -60,11 +59,15 @@ async def transaction(db: AsyncSession) -> AsyncGenerator[None, None]:
         logger.debug("explicit transaction commit")
     else:
         logger.debug("already in transaction")
+
         try:
             yield
+
         except Exception:
+
             await db.rollback()
             raise
+
         if db.in_transaction():
             await db.commit()
             logger.debug("implicit transaction commit")
