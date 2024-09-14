@@ -3,7 +3,7 @@ from typing import Any, AsyncIterator, AsyncGenerator
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
-    create_async_engine,
+    create_async_engine, AsyncConnection,
 )
 from sqlalchemy.orm import declarative_base
 from crypto_converter.common.common import configure_logger
@@ -31,6 +31,11 @@ async def get_db_session() -> AsyncSession:
     finally:
         await db.close()
 
+@asynccontextmanager
+async def get_db_connection() -> AsyncConnection:
+    """Factory that returns an async connection."""
+    async with engine.connect() as connection:
+        yield connection
 
 # This option works alone fine without using transaction context manager below
 # async def get_db_session() -> AsyncSession:
