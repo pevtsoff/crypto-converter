@@ -15,7 +15,7 @@ REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 REDIS_TICKER_KEY = os.getenv("REDIS_TICKERS_KEY", "tickers")
 
 PG_URL = os.getenv("PG_URL", "postgresql://postgres:postgres@localhost:5432/postgres")
-SQL_DEBUG = bool(os.getenv("SQL_DEBUG", False))
+SQL_DEBUG = bool(os.getenv("SQL_DEBUG", True))
 
 REDIS_FLUSH_TIMEOUT = int(os.getenv("REDIS_FLUSH_TIMEOUT", 30))
 REDIS_EXPIRY_TIME = int(os.getenv("REDIS_EXPIRY_TIME", 3600))
