@@ -37,14 +37,14 @@ async def get_db_session() -> AsyncSession:
         await db.close()
 
 
-# This option works alone fine without using tranaction context manager below
+# This option works alone fine without using transaction context manager below
 # async def get_db_session() -> AsyncSession:
 #     async with async_session() as session:
 #         yield session
 #
 
 #
-# #this option works fine with transaction manager
+# #this option works fine with transaction context manager
 # async def get_db_session() -> AsyncSession:
 #     async with async_session.begin() as transaction:
 #         yield transaction
