@@ -17,7 +17,6 @@ async def exchange_currency(
     return data
 
 
-
 def create_fastapi_app():
     app = FastAPI(
         title="Crypto Converter",

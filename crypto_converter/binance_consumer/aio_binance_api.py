@@ -65,7 +65,9 @@ async def flush_tickers():
             await redis_client.expire(tick_name, REDIS_EXPIRY_TIME)
 
         end = time.time()
-        logger.warning(f"It took {end - start} seconds to flush {tickers_copy.__len__()} tickers to redis")
+        logger.warning(
+            f"It took {end - start} seconds to flush {tickers_copy.__len__()} tickers to redis"
+        )
 
     else:
         logger.warning("No tickers to flush")
@@ -74,7 +76,7 @@ async def flush_tickers():
 async def flush_tickers_to_db(tickers: list):
     tickers_objects = []
     start = time.time()
-    async with get_db_session() as session,  transaction(session):
+    async with get_db_session() as session, transaction(session):
         for tick_name, data in tickers.items():
             if data["ticker_name"]:
 
@@ -87,7 +89,9 @@ async def flush_tickers_to_db(tickers: list):
                 tickers_objects.append(ticker)
 
     end = time.time()
-    logger.info(f'it took {end - start} seconds to flush {tickers.__len__()} tickers to database')
+    logger.info(
+        f"it took {end - start} seconds to flush {tickers.__len__()} tickers to database"
+    )
 
     # for ticker in tickers_objects:
     #     logger.warning(f"Saved ticker {ticker.id}")
@@ -123,6 +127,7 @@ def quote_consumer_main():
 
     try:
         loop.run_forever()
+
     finally:
         loop.run_until_complete(loop.shutdown_asyncgens())
         loop.close()

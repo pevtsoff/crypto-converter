@@ -14,11 +14,7 @@ logger = configure_logger(__name__)
 logger.info("Connecting to database...")
 
 Base = declarative_base()
-engine = create_async_engine(
-    PG_URL,
-    query_cache_size=0,
-    echo=SQL_DEBUG
-)
+engine = create_async_engine(PG_URL, query_cache_size=0, echo=SQL_DEBUG)
 
 
 async_session = async_sessionmaker(
@@ -47,7 +43,6 @@ async def get_db_session() -> AsyncSession:
 # async def get_db_session() -> AsyncSession:
 #     async with async_session.begin() as transaction:
 #         yield transaction
-
 
 
 @asynccontextmanager
