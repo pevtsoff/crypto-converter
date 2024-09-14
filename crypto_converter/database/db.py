@@ -27,9 +27,9 @@ async_session = async_sessionmaker(
 )
 
 
-async def get_db_session() -> AsyncSession:
-    db = async_session()
-    yield db
+# async def get_db_session() -> AsyncSession:
+#     db = async_session()
+#     yield db
 
 
 # fastapi option
@@ -40,6 +40,39 @@ async def get_db_session() -> AsyncSession:
 #     finally:
 #         await db.close()
 
+
+
+
+# #this option still give out sqlalchemy.exc.ResourceClosedError: This transaction is closed
+@asynccontextmanager
+async def get_db_session() -> AsyncSession:
+    async with async_session() as session:
+        yield session
+
+
+#
+# #this option works fine
+# async def get_db_session() -> AsyncSession:
+#     async with async_session.begin() as transaction:
+#         yield transaction
+
+
+# async def get_db_session():
+#     session: AsyncSession = async_session()
+#     try:
+#         yield session
+#         if session.in_transaction() and not session.in_commit():
+#             await session.commit()
+#     except Exception:
+#
+#         if session.in_transaction():
+#             await session.rollback()
+#         raise
+#
+#     finally:
+#
+#         if session.in_transaction():
+#             await session.close()
 
 @asynccontextmanager
 async def transaction(db: AsyncSession) -> AsyncGenerator[None, None]:

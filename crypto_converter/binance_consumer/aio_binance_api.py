@@ -71,9 +71,7 @@ async def flush_tickers():
 
 
 async def flush_tickers_to_db(tickers: list):
-    session = await anext(get_db_session())
-
-    async with transaction(session):
+    async with get_db_session() as session:
         for tick_name, data in tickers.items():
             if data["ticker_name"]:
 
