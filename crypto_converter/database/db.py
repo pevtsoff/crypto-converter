@@ -7,18 +7,27 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import declarative_base
 from crypto_converter.common.common import configure_logger
-from crypto_converter.common.settings import PG_URL, SQL_DEBUG
-
+from crypto_converter.common.settings import PG_URL, SQL_DEBUG, DB_POOL_SIZE, DB_MAX_OVERFLOW, SQL_ALCHEMY_CACHE_SIZE
 
 logger = configure_logger(__name__)
 logger.info("Connecting to database...")
 
 Base = declarative_base()
-engine = create_async_engine(PG_URL, query_cache_size=0, echo=SQL_DEBUG)
+engine = create_async_engine(
+    PG_URL,
+    query_cache_size=SQL_ALCHEMY_CACHE_SIZE,
+    echo=SQL_DEBUG,
+    pool_size=DB_POOL_SIZE,
+    max_overflow=DB_MAX_OVERFLOW,
+)
 
 
 async_session = async_sessionmaker(
-    engine, expire_on_commit=False, class_=AsyncSession, future=True, autoflush=False
+    engine,
+    expire_on_commit=False,
+    class_=AsyncSession,
+    future=True,
+    autoflush=False
 )
 
 
