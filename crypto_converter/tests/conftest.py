@@ -40,11 +40,10 @@ def clean_migrations():
 
 @pytest.fixture(scope="session", autouse=True)
 def client():
-    with ExitStack():
-        app = create_fastapi_app()
+    app = create_fastapi_app()
 
-        with TestClient(app) as client:
-            yield client
+    with TestClient(app) as client:
+        yield client
 
 
 

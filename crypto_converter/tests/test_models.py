@@ -1,5 +1,4 @@
 import pytest
-
 from crypto_converter.database.db_models import BinanceTickerModel
 
 @pytest.mark.asyncio
