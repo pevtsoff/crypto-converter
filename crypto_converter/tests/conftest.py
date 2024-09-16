@@ -14,24 +14,20 @@ from crypto_converter.common.settings import PG_URL
 from asyncpg import Connection
 from fastapi.testclient import TestClient
 
-from crypto_converter.database.db import Base, async_session, get_db_connection, get_db_session, engine
+from crypto_converter.database.db import Base, get_db_connection, get_db_session, engine
 from crypto_converter.exchange_api.exchange_api import create_fastapi_app
 
 """
 https://medium.com/@tclaitken/setting-up-a-fastapi-app-with-async-sqlalchemy-2-0-pydantic-v2-e6c540be4308
 """
 
-
-@pytest.fixture(autouse=True)
-def app():
+@pytest.fixture(scope="session", autouse=True)
+def client():
     with ExitStack():
-        yield create_fastapi_app()
+        app = create_fastapi_app()
 
-
-@pytest.fixture
-def client(app):
-    with TestClient(app) as client:
-        yield client
+        with TestClient(app) as client:
+            yield client
 
 
 
@@ -64,6 +60,16 @@ def db_engine():
     return engine
 
 
+# This is a spare fixture
+@pytest.fixture(scope="function", autouse=True)
+async def db_session_committed():
+    """This db session is only for the test cases which need data to be committed into db"""
+    async with get_db_session() as session:
+        async with session.begin():
+            yield session
+
+
+# this is the main test fixture for test using database
 @pytest.fixture
 async def db_session(db_engine):
     """Fixture of SQLAlchemy session object with auto rollback after each test case"""
@@ -86,15 +92,3 @@ async def db_session(db_engine):
     if session.in_transaction():  # pylint: disable=no-member
         await transaction.rollback()
     await connection.close()
-
-
-
-
-@pytest.fixture(scope="function", autouse=True)
-async def db_session_committed():
-    """This db session is only for the test cases which need data to be committed into db"""
-    async with get_db_session() as session:
-        async with session.begin():
-            yield session
-
-
