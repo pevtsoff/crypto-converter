@@ -1,22 +1,20 @@
-import asyncio
-import os
-from contextlib import ExitStack
-
+import asyncpg
+import psycopg2
 import pytest
 from alembic.command import downgrade
 from alembic.config import Config
-from alembic.migration import MigrationContext
-from alembic.operations import Operations
-from alembic.script import ScriptDirectory
+from asyncpg import DuplicateDatabaseError
 from sqlalchemy import event, Transaction
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from crypto_converter.common.common import logger
 from crypto_converter.common.settings import PG_URL
-from asyncpg import Connection
 from fastapi.testclient import TestClient
 from argparse import Namespace
 from crypto_converter.database.db import Base, get_db_connection, get_db_session, engine
 from crypto_converter.exchange_api.exchange_api import create_fastapi_app
+
+
 
 """
 https://medium.com/@tclaitken/setting-up-a-fastapi-app-with-async-sqlalchemy-2-0-pydantic-v2-e6c540be4308
@@ -47,8 +45,26 @@ def client():
 
 
 
+def create_test_database():
+    """Create the test database synchronously before any tests run."""
+    try:
+        conn = psycopg2.connect(dsn="postgresql://postgres:postgres@postgres:5432")
+        conn.autocommit = True
+        cursor = conn.cursor()
+
+        cursor.execute("DROP DATABASE IF EXISTS test_db;")
+        cursor.execute("CREATE DATABASE test_db;")
+        cursor.execute("GRANT ALL PRIVILEGES ON DATABASE test_db TO postgres;")
+
+        cursor.close()
+        conn.close()
+
+    except DuplicateDatabaseError as e:
+        logger.exception(e)
+
 @pytest.fixture(scope="session")
-def db_engine():
+async def db_engine():
+    create_test_database()
     return engine
 
 

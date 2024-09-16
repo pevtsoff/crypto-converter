@@ -104,7 +104,7 @@ curl --location 'http://localhost:8000/exchange/' --header 'Content-Type: applic
 ```
 
 ## How to add alembic to the local project
-```angular2html
+```shell
 1. run
  alembic init --template async ./alembic
 2. Declare sqlalchemy's declarative Base in the code
@@ -112,4 +112,9 @@ curl --location 'http://localhost:8000/exchange/' --header 'Content-Type: applic
 4. Run to create the very first migration 
  docker compose exec api alembic revision --autogenerate -m "your message here"
 5. docker compose exec api alembic upgrade
+```
+
+## Running migrations
+```shell
+
 ```

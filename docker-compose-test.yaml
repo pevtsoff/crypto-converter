@@ -1,6 +1,8 @@
 services:
   api:
     command: sh -c "pytest crypto_converter/tests/test_models.py"
+    networks:
+      - main
     container_name: test-${TAG}
     restart: no
     environment:
