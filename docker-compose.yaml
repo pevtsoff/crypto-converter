@@ -1,6 +1,3 @@
-version: '3.8'
-
-
 x-base-python: &x-base-python
   build:
     context: .
@@ -22,7 +19,7 @@ x-base-python: &x-base-python
 services:
   api:
     <<: *x-base-python
-    command: sh -c "python crypto_converter/run.py api"
+    command: sh -c "alembic upgrade head && python crypto_converter/run.py api"
     container_name: api-${TAG}
     environment:
       - EXCHANGE_API_PORT=${EXCHANGE_API_PORT}

@@ -38,8 +38,8 @@ def event_loop(request):
 
 
 def run_migrations(connection: Connection):
-    config = Config("app/alembic.ini")
-    config.set_main_option("script_location", "app/alembic")
+    config = Config("./alembic.ini")
+    config.set_main_option("script_location", "../alembic")
     config.set_main_option("sqlalchemy.url", PG_URL)
     script = ScriptDirectory.from_config(config)
 
@@ -61,19 +61,14 @@ async def setup_database():
 
         yield
 
-    # Teardown
-    await sessionmanager.close()
 
 
 # Each test function is a clean slate
 @pytest.fixture(scope="function", autouse=True)
 async def db_session():
     async with get_db_session() as session:
-        try:
-            await session.begin()
+        async with session.begin():
             yield session
-        finally:
-            await session.rollback()  # Rolls back the outer transaction
 
 
 

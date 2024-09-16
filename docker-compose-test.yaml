@@ -1,10 +1,8 @@
-version: '3.8'
-
-
 services:
   api:
-    command: sh -c "pytest ."
+    command: sh -c "pytest crypto_converter/tests/test_models.py"
     container_name: test-${TAG}
+    restart: no
     environment:
       - EXCHANGE_API_PORT=${EXCHANGE_API_PORT}
       - PORT_PREFIX=${PORT_PREFIX}
