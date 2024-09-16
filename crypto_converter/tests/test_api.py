@@ -104,13 +104,12 @@ def redis_mock():
         ),
     ],
 )
-def test_conversion_from(input_json, expected_json, redis_mock):
+def test_conversion_from(client, input_json, expected_json, redis_mock):
     with patch(
         "crypto_converter.exchange_api.exchange_service.ExchangeService.get_ticker_from_redis",
         side_effect=get_ticker_from_redis_mock,
     ):
-        with TestClient(app) as client:
-            response = client.post("/exchange", json=input_json)
+        response = client.post("/exchange", json=input_json)
 
         resp_json = response.json()
         diff = DeepDiff(expected_json, resp_json, exclude_paths=["rate_timestamp"])
@@ -188,13 +187,12 @@ def test_conversion_from(input_json, expected_json, redis_mock):
         ),
     ],
 )
-def test_conversion_from_negative(input_json, expected_json, redis_mock):
+def test_conversion_from_negative(client, input_json, expected_json, redis_mock):
     with patch(
         "crypto_converter.exchange_api.exchange_service.ExchangeService.get_ticker_from_redis",
         side_effect=get_ticker_from_redis_mock,
     ):
-        with TestClient(app) as client:
-            response = client.post("/exchange", json=input_json)
+        response = client.post("/exchange", json=input_json)
 
         resp_json = response.json()
         diff = DeepDiff(expected_json, resp_json, exclude_paths=["rate_timestamp"])
