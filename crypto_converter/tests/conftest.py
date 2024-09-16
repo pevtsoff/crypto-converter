@@ -3,6 +3,7 @@ import os
 from contextlib import ExitStack
 
 import pytest
+from alembic.command import downgrade
 from alembic.config import Config
 from alembic.migration import MigrationContext
 from alembic.operations import Operations
@@ -13,13 +14,29 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from crypto_converter.common.settings import PG_URL
 from asyncpg import Connection
 from fastapi.testclient import TestClient
-
+from argparse import Namespace
 from crypto_converter.database.db import Base, get_db_connection, get_db_session, engine
 from crypto_converter.exchange_api.exchange_api import create_fastapi_app
 
 """
 https://medium.com/@tclaitken/setting-up-a-fastapi-app-with-async-sqlalchemy-2-0-pydantic-v2-e6c540be4308
 """
+
+def get_alembic_config():
+    cmd_opts = Namespace(config="../alembic.ini", name="alembic", db_url=PG_URL, raiseerr=False, x=None)
+    config = Config(file_=cmd_opts.config, ini_section=cmd_opts.name, cmd_opts=cmd_opts)  # pylint: disable=E1101
+    config.set_main_option("script_location", "../alembic")
+    config.set_main_option("sqlalchemy.url", str(PG_URL) + "?async_fallback=true")
+
+    return config
+
+alembic_config = get_alembic_config()
+
+
+@pytest.fixture
+def clean_migrations():
+    downgrade(alembic_config, "base")
+
 
 @pytest.fixture(scope="session", autouse=True)
 def client():
@@ -31,6 +48,10 @@ def client():
 
 
 
+
+
+# This is piece of code is not  needed as I can use Base.create_all for the whole session
+# and after that just run alembic stairway test
 def run_migrations(connection: Connection):
     config = Config("./alembic.ini")
     config.set_main_option("script_location", "../alembic")
