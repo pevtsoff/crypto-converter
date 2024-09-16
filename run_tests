@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+
+
+docker_compose_files='--file docker-compose.yaml -f docker-compose-test.yaml'
+
+docker compose ${docker_compose_files} $*

@@ -62,12 +62,12 @@ async def setup_database():
         yield
 
     # Teardown
-    #await sessionmanager.close()
+    await sessionmanager.close()
 
 
 # Each test function is a clean slate
 @pytest.fixture(scope="function", autouse=True)
-async def transactional_session():
+async def db_session():
     async with get_db_session() as session:
         try:
             await session.begin()
@@ -76,9 +76,6 @@ async def transactional_session():
             await session.rollback()  # Rolls back the outer transaction
 
 
-@pytest.fixture(scope="function")
-async def db_session(transactional_session):
-    yield transactional_session
 
 
 @pytest.fixture(scope="function", autouse=True)
