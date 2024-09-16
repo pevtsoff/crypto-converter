@@ -119,8 +119,6 @@ def test_conversion_from(client, input_json, expected_json, redis_mock):
 
 
 # negative tests
-
-
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "input_json,expected_json",
