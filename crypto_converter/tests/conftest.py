@@ -47,34 +47,6 @@ def client():
 
 
 
-
-
-# This is piece of code is not  needed as I can use Base.create_all for the whole session
-# and after that just run alembic stairway test
-def run_migrations(connection: Connection):
-    config = Config("./alembic.ini")
-    config.set_main_option("script_location", "../alembic")
-    config.set_main_option("sqlalchemy.url", PG_URL)
-    script = ScriptDirectory.from_config(config)
-
-    def upgrade(rev, context):
-        return script._upgrade_revs("head", rev)
-
-    context = MigrationContext.configure(connection, opts={"target_metadata": Base.metadata, "fn": upgrade})
-
-    with context.begin_transaction():
-        with Operations.context(context):
-            context.run_migrations()
-
-
-@pytest.fixture(scope="session", autouse=True)
-async def setup_database():
-    async with get_db_connection() as connection:
-        await connection.run_sync(run_migrations)
-        yield connection
-
-
-
 @pytest.fixture(scope="session")
 def db_engine():
     return engine
