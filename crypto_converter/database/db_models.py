@@ -38,5 +38,5 @@ class BinanceTickersModel(Base):
     __tablename__ = "binance_tickers_list"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    ticker_name: Mapped[str] = mapped_column(String(50))
+    ticker_name: Mapped[str] = mapped_column(String(50), index=True)
     ticker_data: Mapped[List[BinanceTickerDataModel]] = relationship()

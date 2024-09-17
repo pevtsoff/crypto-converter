@@ -4,6 +4,9 @@ import json
 import sys
 import time
 from copy import deepcopy
+
+from sqlalchemy.orm import selectinload
+
 from crypto_converter.common.common import configure_logger, connect_to_redis, repeat
 from crypto_converter.common.models import BinanceTicker
 from crypto_converter.common.settings import (
@@ -12,7 +15,11 @@ from crypto_converter.common.settings import (
     REDIS_FLUSH_TIMEOUT,
 )
 from crypto_converter.database.db import get_db_session, transaction
-from crypto_converter.database.db_models import BinanceTickerModel
+from crypto_converter.database.db_models import (
+    BinanceTickersModel,
+    BinanceTickerDataModel,
+)
+from sqlalchemy import select
 
 
 logger = configure_logger(__name__)
@@ -76,13 +83,27 @@ async def flush_tickers_to_db(tickers: list):
     async with get_db_session() as session, transaction(session):
         for tick_name, data in tickers.items():
             if data["ticker_name"]:
-                ticker = BinanceTickerModel(
-                    ticker_name=data["ticker_name"],
+
+                stmt = (
+                    select(BinanceTickersModel)
+                    .options(selectinload(BinanceTickersModel.ticker_data))
+                    .where(BinanceTickersModel.ticker_name == data["ticker_name"])
+                )
+
+                ticker = (await session.execute(stmt)).scalars().first()
+
+                if ticker is None:
+                    ticker = BinanceTickersModel(ticker_name=data["ticker_name"])
+
+                ticker_data = BinanceTickerDataModel(
                     price=data["price"],
                     timestamp=data["timestamp"],
+                    json_data=json.dumps(data),
                 )
-                session.add(ticker)
+
+                ticker.ticker_data.append(ticker_data)
                 tickers_objects.append(ticker)
+                session.add(ticker)
 
     end = time.time()
     logger.info(
