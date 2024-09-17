@@ -4,9 +4,6 @@ import json
 import sys
 import time
 from copy import deepcopy
-
-from sqlalchemy.orm import selectinload
-
 from crypto_converter.common.common import configure_logger, connect_to_redis, repeat
 from crypto_converter.common.models import BinanceTicker
 from crypto_converter.common.settings import (
@@ -86,7 +83,11 @@ async def flush_tickers_to_db(tickers: list):
 
                 stmt = (
                     select(BinanceTickersModel)
-                    .options(selectinload(BinanceTickersModel.ticker_data))
+                    # .options(
+                    # selectinload(
+                    # BinanceTickersModel.ticker_data)
+                    # )
+                    # This is a greenlet error fix for lazy load issue
                     .where(BinanceTickersModel.ticker_name == data["ticker_name"])
                 )
 
@@ -99,10 +100,11 @@ async def flush_tickers_to_db(tickers: list):
                     price=data["price"],
                     timestamp=data["timestamp"],
                     json_data=json.dumps(data),
+                    ticker=ticker,
                 )
 
-                ticker.ticker_data.append(ticker_data)
-                tickers_objects.append(ticker)
+                # ticker.ticker_data.append(ticker_data)
+                tickers_objects.append(ticker_data)
                 session.add(ticker)
 
     end = time.time()
