@@ -16,6 +16,7 @@ from crypto_converter.common.settings import (
     SQL_ALCHEMY_CACHE_SIZE,
 )
 
+
 logger = configure_logger(__name__)
 logger.info("Connecting to database...")
 
