@@ -1,8 +1,10 @@
 x-base-python: &x-base-python
+  user: $USER
   build:
     context: .
     args:
     - INSTALL_DIR=${INSTALL_DIR}
+    - USERNAME=$USER
   image: app-base-image:${TAG}
   env_file: .env
   working_dir: ${INSTALL_DIR}

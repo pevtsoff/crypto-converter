@@ -10,6 +10,9 @@ RUN pip3 install poetry && poetry config virtualenvs.create false
 COPY wait-for /bin/wait-for
 RUN poetry install
 
+ARG USERNAME=$USERNAME
+RUN useradd -m $USERNAME
+USER $USERNAME
 
 
 
