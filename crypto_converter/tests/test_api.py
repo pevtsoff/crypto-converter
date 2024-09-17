@@ -1,10 +1,7 @@
 import time
-from unittest.mock import AsyncMock, patch
-
 import pytest
+from unittest.mock import AsyncMock, patch
 from deepdiff import DeepDiff
-from fastapi.testclient import TestClient
-
 from crypto_converter.common.models import BinanceTicker
 from crypto_converter.exchange_api.exchange_api import create_fastapi_app
 

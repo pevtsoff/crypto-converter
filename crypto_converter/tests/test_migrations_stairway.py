@@ -11,6 +11,7 @@ def get_revisions():
 
     return revisions
 
+
 @pytest.mark.parametrize("revision", get_revisions())
 def test_migrations_stairway(clean_migrations, revision: Script):
     upgrade(alembic_config, revision.revision)

@@ -1,4 +1,3 @@
-from pip._vendor.rich.table import Column
 from sqlalchemy import BigInteger, String
 from sqlalchemy.orm import Mapped, declarative_base, mapped_column
 

@@ -1,33 +1,34 @@
-import asyncpg
-import psycopg2
 import pytest
 from alembic.command import downgrade
 from alembic.config import Config
-from asyncpg import DuplicateDatabaseError
 from sqlalchemy import event, Transaction
-from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_utils import create_database, database_exists, drop_database
 from crypto_converter.common.common import logger
 from crypto_converter.common.settings import PG_URL
 from fastapi.testclient import TestClient
 from argparse import Namespace
-from crypto_converter.database.db import Base, get_db_connection, get_db_session, engine
+from crypto_converter.database.db import get_db_session, engine
 from crypto_converter.exchange_api.exchange_api import create_fastapi_app
-
 
 
 """
 https://medium.com/@tclaitken/setting-up-a-fastapi-app-with-async-sqlalchemy-2-0-pydantic-v2-e6c540be4308
 """
 
+
 def get_alembic_config():
-    cmd_opts = Namespace(config="../alembic.ini", name="alembic", db_url=PG_URL, raiseerr=False, x=None)
-    config = Config(file_=cmd_opts.config, ini_section=cmd_opts.name, cmd_opts=cmd_opts)  # pylint: disable=E1101
+    cmd_opts = Namespace(
+        config="../alembic.ini", name="alembic", db_url=PG_URL, raiseerr=False, x=None
+    )
+    config = Config(
+        file_=cmd_opts.config, ini_section=cmd_opts.name, cmd_opts=cmd_opts
+    )  # pylint: disable=E1101
     config.set_main_option("script_location", "../alembic")
     config.set_main_option("sqlalchemy.url", str(PG_URL) + "?async_fallback=true")
 
     return config
+
 
 alembic_config = get_alembic_config()
 
@@ -48,7 +49,6 @@ def client():
 def create_test_database():
     """Create the test database asynchronously before any tests run."""
     PG_URL = "postgresql://postgres:postgres@postgres:5432/test_db"
-
 
     if database_exists(PG_URL):
         drop_database(PG_URL)
@@ -77,6 +77,7 @@ def create_test_database():
 #     except DuplicateDatabaseError as e:
 #         logger.exception(e)
 
+
 @pytest.fixture(scope="session")
 async def db_engine():
     create_test_database()
@@ -99,7 +100,9 @@ async def db_session(db_engine):
     # https://docs.sqlalchemy.org/en/14/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
     connection = await db_engine.connect()
     transaction = await connection.begin()
-    session = AsyncSession(bind=connection, expire_on_commit=False, future=True, autoflush=False)
+    session = AsyncSession(
+        bind=connection, expire_on_commit=False, future=True, autoflush=False
+    )
     await connection.begin_nested()
 
     @event.listens_for(session.sync_session, "after_transaction_end")

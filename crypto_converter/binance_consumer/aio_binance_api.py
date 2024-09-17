@@ -1,13 +1,9 @@
+import websockets
 import asyncio
 import json
-import os
 import sys
 import time
 from copy import deepcopy
-
-import websockets
-from dotenv import load_dotenv
-
 from crypto_converter.common.common import configure_logger, connect_to_redis, repeat
 from crypto_converter.common.models import BinanceTicker
 from crypto_converter.common.settings import (
@@ -17,6 +13,7 @@ from crypto_converter.common.settings import (
 )
 from crypto_converter.database.db import get_db_session, transaction
 from crypto_converter.database.db_models import BinanceTickerModel
+
 
 logger = configure_logger(__name__)
 tickers = {}
@@ -79,7 +76,6 @@ async def flush_tickers_to_db(tickers: list):
     async with get_db_session() as session, transaction(session):
         for tick_name, data in tickers.items():
             if data["ticker_name"]:
-
                 ticker = BinanceTickerModel(
                     ticker_name=data["ticker_name"],
                     price=data["price"],

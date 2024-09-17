@@ -1,6 +1,7 @@
 import pytest
 from crypto_converter.database.db_models import BinanceTickerModel
 
+
 @pytest.mark.asyncio
 async def test_model_creation(db_session):
     session = db_session
