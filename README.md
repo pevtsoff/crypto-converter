@@ -116,5 +116,6 @@ curl --location 'http://localhost:8000/exchange/' --header 'Content-Type: applic
 
 ## Running migrations
 ```shell
-
+docker compose run api alembic revision --autogenerate -m "Your migration message"
+docker compose run api alembic upgrade
 ```
