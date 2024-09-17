@@ -5,8 +5,9 @@ from alembic.command import downgrade
 from alembic.config import Config
 from asyncpg import DuplicateDatabaseError
 from sqlalchemy import event, Transaction
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from sqlalchemy_utils import create_database, database_exists, drop_database
 from crypto_converter.common.common import logger
 from crypto_converter.common.settings import PG_URL
 from fastapi.testclient import TestClient
@@ -44,23 +45,37 @@ def client():
         yield client
 
 
-
 def create_test_database():
-    """Create the test database synchronously before any tests run."""
-    try:
-        conn = psycopg2.connect(dsn="postgresql://postgres:postgres@postgres:5432")
-        conn.autocommit = True
-        cursor = conn.cursor()
+    """Create the test database asynchronously before any tests run."""
+    PG_URL = "postgresql://postgres:postgres@postgres:5432/test_db"
 
-        cursor.execute("DROP DATABASE IF EXISTS test_db;")
-        cursor.execute("CREATE DATABASE test_db;")
-        cursor.execute("GRANT ALL PRIVILEGES ON DATABASE test_db TO postgres;")
 
-        cursor.close()
-        conn.close()
+    if database_exists(PG_URL):
+        drop_database(PG_URL)
+        logger.info("Test database dropped")
 
-    except DuplicateDatabaseError as e:
-        logger.exception(e)
+    create_database(PG_URL)
+    logger.info(f"Test database {PG_URL} created.")
+
+
+# Example of creating test db before the tests using just psycopg2. Otherwize you will get error
+# Cannot run Create database within transaction in postgres, as postgres doesnt support sucha a call
+# def create_test_database():
+#     """Create the test database synchronously before any tests run."""
+#     try:
+#         conn = psycopg2.connect(dsn="postgresql://postgres:postgres@postgres:5432")
+#         conn.autocommit = True
+#         cursor = conn.cursor()
+#
+#         cursor.execute("DROP DATABASE IF EXISTS test_db;")
+#         cursor.execute("CREATE DATABASE test_db;")
+#         cursor.execute("GRANT ALL PRIVILEGES ON DATABASE test_db TO postgres;")
+#
+#         cursor.close()
+#         conn.close()
+#
+#     except DuplicateDatabaseError as e:
+#         logger.exception(e)
 
 @pytest.fixture(scope="session")
 async def db_engine():
