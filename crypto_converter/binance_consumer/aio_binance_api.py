@@ -96,6 +96,9 @@ async def flush_tickers_to_db(tickers: list):
                 if ticker is None:
                     ticker = BinanceTickersModel(ticker_name=data["ticker_name"])
 
+                else:
+                    session.merge(ticker)
+
                 ticker_data = BinanceTickerDataModel(
                     price=data["price"],
                     timestamp=data["timestamp"],

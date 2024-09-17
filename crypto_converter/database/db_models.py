@@ -39,4 +39,6 @@ class BinanceTickersModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     ticker_name: Mapped[str] = mapped_column(String(50), index=True)
-    ticker_data: Mapped[List[BinanceTickerDataModel]] = relationship()
+    ticker_data: Mapped[List[BinanceTickerDataModel]] = relationship(
+        cascade="all, delete-orphan, save-update"
+    )
