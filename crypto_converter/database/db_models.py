@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List
-from sqlalchemy import BigInteger, String, JSON, ForeignKey, Float, DDL
+from sqlalchemy import BigInteger, String, JSON, ForeignKey, Float
 from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship
 import sqlalchemy as sa
 
@@ -53,30 +53,3 @@ class BinanceTickersModel(Base):
     ticker_aggregated_data: Mapped[List[BinanceTickerAggregatedData]] = relationship(
         passive_deletes="all"
     )
-
-
-function_ddl = DDL(
-    """
-CREATE OR REPLACE FUNCTION update_aggregates()
-RETURNS TRIGGER AS $$
-BEGIN
-    INSERT INTO binance_ticker_aggregates (ticker_id, min_price, max_price, avg_price)
-    VALUES (NEW.ticker_id, NEW.price, NEW.price, NEW.price)
-    ON CONFLICT (ticker_id)
-    DO UPDATE SET
-        min_price = LEAST(binance_ticker_aggregates.min_price, NEW.price),
-        max_price = GREATEST(binance_ticker_aggregates.max_price, NEW.price),
-        avg_price = (binance_ticker_aggregates.avg_price + NEW.price) / 2;  -- Adjust as needed
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-"""
-)
-
-trigger_ddl = DDL(
-    """
-CREATE TRIGGER update_aggregates_trigger
-AFTER INSERT ON binance_tickers_data
-FOR EACH ROW EXECUTE FUNCTION update_aggregates();
-"""
-)
