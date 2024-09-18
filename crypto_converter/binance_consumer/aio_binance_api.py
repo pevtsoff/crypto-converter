@@ -109,6 +109,10 @@ async def flush_tickers_to_db(tickers: list):
                 # ticker.ticker_data.append(ticker_data)
                 tickers_objects.append(ticker_data)
                 session.add(ticker)
+                # this is neccessary since we are addig the ticker TO the ticker data
+                # and sqlalchemy doesn't add it to the session automatically as if it did
+                # in case we added the ticker data as ticker.append(ticker_data)
+                session.add(ticker_data)
 
     end = time.time()
     logger.info(

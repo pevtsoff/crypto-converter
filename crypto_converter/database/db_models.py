@@ -24,8 +24,10 @@ class BinanceTickerDataModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
-    ticker_id: Mapped[int] = mapped_column(ForeignKey("binance_tickers_list.id"))
-    ticker: Mapped["BinanceTickersModel"] = relationship(back_populates="ticker_data")
+    ticker_id: Mapped[int] = mapped_column(
+        ForeignKey("binance_tickers_list.id", ondelete="CASCADE")
+    )
+    ticker: Mapped["BinanceTickersModel"] = relationship()
 
     price: Mapped[str] = mapped_column(String(50))
     timestamp: Mapped[BigInteger] = mapped_column(BigInteger)
@@ -40,5 +42,6 @@ class BinanceTickersModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     ticker_name: Mapped[str] = mapped_column(String(50), index=True)
     ticker_data: Mapped[List[BinanceTickerDataModel]] = relationship(
-        cascade="all, delete-orphan, save-update"
+        # cascade="all, delete-orphan",
+        passive_deletes="all"
     )
