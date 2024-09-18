@@ -7,5 +7,6 @@ repos:
     rev: 0.1.2
     hooks:
       - id: pylama
+        files: ^(crypto_converter)/
 default_language_version:
   python: python3.12

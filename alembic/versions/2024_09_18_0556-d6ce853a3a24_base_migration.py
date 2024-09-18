@@ -1,17 +1,20 @@
-"""added cascade delete
+"""base migration
 
-Revision ID: 052ab839d3a2
-Revises: b698fde8c932
-Create Date: 2024-09-17 13:40:12.492490
+Revision ID: d6ce853a3a24
+Revises: 
+Create Date: 2024-09-18 05:56:16.113470
 
 """
 
 from typing import Sequence, Union
 
+from alembic import op
+import sqlalchemy as sa
+
 
 # revision identifiers, used by Alembic.
-revision: str = "052ab839d3a2"
-down_revision: Union[str, None] = "b698fde8c932"
+revision: str = "d6ce853a3a24"
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
