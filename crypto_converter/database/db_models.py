@@ -8,17 +8,6 @@ import sqlalchemy as sa
 Base = declarative_base()
 
 
-class BinanceTickerModel(Base):
-    __tablename__ = "binance_tickers"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    ticker_name: Mapped[str] = mapped_column(String(50))
-    price: Mapped[str] = mapped_column(String(50))
-    timestamp: Mapped[BigInteger] = mapped_column(BigInteger)
-
-    created_at = sa.Column(sa.DateTime, default=datetime.utcnow, nullable=True)
-
-
 class BinanceTickerDataModel(Base):
     __tablename__ = "binance_tickers_data"
 
