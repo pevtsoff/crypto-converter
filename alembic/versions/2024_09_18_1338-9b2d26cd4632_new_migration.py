@@ -31,8 +31,13 @@ BEGIN
         AVG(price::FLOAT),
         MAX(price::FLOAT),
         NOW()
-    FROM binance_tickers_data
-    WHERE ticker_id = NEW.ticker_id
+    FROM (
+        SELECT price
+        FROM binance_tickers_data
+        WHERE ticker_id = NEW.ticker_id
+        ORDER BY created_at DESC
+        LIMIT 10 -- creating a window of last X records
+    ) AS subquery
     ON CONFLICT (ticker_id)
     DO UPDATE SET
         min_price = EXCLUDED.min_price,
