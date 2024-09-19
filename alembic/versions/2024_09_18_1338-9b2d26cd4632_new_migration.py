@@ -64,7 +64,9 @@ def upgrade() -> None:
     # Create the aggregation function and trigger
     op.execute(aggregation_function_ddl)
     op.execute(aggregation_trigger_ddl)
-    op.create_unique_constraint(None, "binance_tickers_aggregated_data", ["ticker_id"])
+    op.create_unique_constraint(
+        "uq_ticker_id", "binance_tickers_aggregated_data", ["ticker_id"]
+    )
 
 
 def downgrade() -> None:
@@ -74,4 +76,6 @@ def downgrade() -> None:
     # Drop the function
     op.execute("DROP FUNCTION IF EXISTS update_aggregated_prices;")
     # Drop the aggregated data table
-    op.drop_constraint(None, "binance_tickers_aggregated_data", type_="unique")
+    op.drop_constraint(
+        "uq_ticker_id", "binance_tickers_aggregated_data", type_="unique"
+    )
