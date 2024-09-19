@@ -3,7 +3,7 @@ from fastapi.encoders import decimal_encoder
 from crypto_converter.common.exception_handlers import common_exception_handler
 import uvicorn
 
-from crypto_converter.exchange_api.exchange_api import router
+from crypto_converter.api.exchange.exchange_api import router
 
 
 def create_fastapi_app():

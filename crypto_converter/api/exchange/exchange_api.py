@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from crypto_converter.common.models import ExchangeBid, ExchangeResponse
-from crypto_converter.exchange_api.exchange_service import ExchangeService
+from crypto_converter.api.exchange.exchange_service import ExchangeService
 
 router = APIRouter(prefix="/exchange", tags=["exchange"])
 

@@ -9,7 +9,7 @@ from crypto_converter.common.settings import PG_URL
 from fastapi.testclient import TestClient
 from argparse import Namespace
 from crypto_converter.database.db import get_db_session, engine
-from crypto_converter.exchange_api.exchange_api import create_fastapi_app
+from crypto_converter.api.app import create_fastapi_app
 
 
 """

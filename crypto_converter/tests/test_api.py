@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import AsyncMock, patch
 from deepdiff import DeepDiff
 from crypto_converter.common.models import BinanceTicker
-from crypto_converter.exchange_api.exchange_api import create_fastapi_app
+from crypto_converter.api.app import create_fastapi_app
 
 app = create_fastapi_app()
 
@@ -103,7 +103,7 @@ def redis_mock():
 )
 def test_conversion_from(client, input_json, expected_json, redis_mock):
     with patch(
-        "crypto_converter.exchange_api.exchange_service.ExchangeService.get_ticker_from_redis",
+        "crypto_converter.api.exchange.exchange_service.ExchangeService.get_ticker_from_redis",
         side_effect=get_ticker_from_redis_mock,
     ):
         response = client.post("/exchange", json=input_json)
@@ -184,7 +184,7 @@ def test_conversion_from(client, input_json, expected_json, redis_mock):
 )
 def test_conversion_from_negative(client, input_json, expected_json, redis_mock):
     with patch(
-        "crypto_converter.exchange_api.exchange_service.ExchangeService.get_ticker_from_redis",
+        "crypto_converter.api.exchange.exchange_service.ExchangeService.get_ticker_from_redis",
         side_effect=get_ticker_from_redis_mock,
     ):
         response = client.post("/exchange", json=input_json)
