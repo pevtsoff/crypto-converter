@@ -30,7 +30,7 @@ class BinanceTickerAggregatedData(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     ticker_id: Mapped[int] = mapped_column(
-        ForeignKey("binance_tickers_list.id", ondelete="CASCADE")
+        ForeignKey("binance_tickers_list.id", ondelete="CASCADE"), unique=True
     )
     ticker: Mapped["BinanceTickersModel"] = relationship()
 
