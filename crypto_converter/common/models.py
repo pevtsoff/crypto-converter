@@ -105,3 +105,14 @@ class BinanceTicker(BaseModel):
 
     def get_quantized_price(self):
         return quantize(self.price)
+
+
+class BinanceTickerAggregationInfoResponse(BaseModel):
+    ticker_name: str
+    min_price: float
+    max_price: float
+    avg_price: float
+    timestamp: datetime
+
+    class Config:
+        arbitrary_types_allowed = True

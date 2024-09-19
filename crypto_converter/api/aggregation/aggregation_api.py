@@ -1,0 +1,18 @@
+from fastapi import APIRouter, Depends
+from crypto_converter.api.aggregation.aggregation_service import AggregationService
+from crypto_converter.common.models import BinanceTickerAggregationInfoResponse
+
+
+aggregation_router = APIRouter(prefix="/aggregation", tags=["exchange"])
+
+
+@aggregation_router.get(
+    "/",
+    response_model=BinanceTickerAggregationInfoResponse,
+    response_model_by_alias=True,
+)
+async def exchange_currency(
+    ticker_name: str,
+    service: AggregationService = Depends(),
+):
+    return await service.get_aggregated_data(ticker_name)

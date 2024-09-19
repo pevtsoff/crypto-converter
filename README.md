@@ -103,6 +103,12 @@ curl --location 'http://localhost:8000/exchange/' --header 'Content-Type: applic
 {"error":"Request failed: ('No valid ticker available for ticker %s', 'apebtc2')","status_code":503}
 ```
 
+## Aggregated data endpoints:
+```shell
+curl --location 'http://localhost:8000/aggregation/?ticker_name=btcusdt'
+{"ticker_name":"btcusdt","min_price":62881.99,"max_price":63000.0,"avg_price":62934.10900000001,"timestamp":"2024-09-19T13:09:25.375741"}
+```
+
 ## How to add alembic to the local project
 ```shell
 1. run
@@ -119,3 +125,4 @@ curl --location 'http://localhost:8000/exchange/' --header 'Content-Type: applic
 docker compose run api alembic revision --autogenerate -m "Your migration message"
 docker compose run api alembic upgrade
 ```
+

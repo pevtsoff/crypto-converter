@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from fastapi.encoders import decimal_encoder
+
+from crypto_converter.api.aggregation.aggregation_api import aggregation_router
 from crypto_converter.common.exception_handlers import common_exception_handler
 import uvicorn
 
-from crypto_converter.api.exchange.exchange_api import router
+from crypto_converter.api.exchange.exchange_api import exchange_router
 
 
 def create_fastapi_app():
@@ -13,7 +15,8 @@ def create_fastapi_app():
         version="1.0.0.",
         json_encode=decimal_encoder,
     )
-    app.include_router(router)
+    app.include_router(exchange_router)
+    app.include_router(aggregation_router)
     app.add_exception_handler(Exception, common_exception_handler)
     return app
 
