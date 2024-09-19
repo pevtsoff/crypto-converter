@@ -11,8 +11,20 @@ aggregation_router = APIRouter(prefix="/aggregation", tags=["exchange"])
     response_model=BinanceTickerAggregationInfoResponse,
     response_model_by_alias=True,
 )
-async def exchange_currency(
+async def get_aggregation_data(
     ticker_name: str,
     service: AggregationService = Depends(),
 ):
     return await service.get_aggregated_data(ticker_name)
+
+
+@aggregation_router.get(
+    "/view",
+    response_model=BinanceTickerAggregationInfoResponse,
+    response_model_by_alias=True,
+)
+async def get_aggregation_view_data(
+    ticker_name: str,
+    service: AggregationService = Depends(),
+):
+    return await service.get_aggregated_view_data(ticker_name)
