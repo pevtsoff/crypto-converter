@@ -55,18 +55,18 @@ def client():
 @pytest.fixture(scope="session")
 def create_test_database():
     """Create the test database asynchronously before any tests run."""
-    test_db_url = "postgresql://postgres:postgres@postgres:5432/test_db"
+    PG_URL = "postgresql://postgres:postgres@postgres:5432/test_db"
 
-    if database_exists(test_db_url):
-        drop_database(test_db_url)
+    if database_exists(PG_URL):
+        drop_database(PG_URL)
         logger.info("Test database dropped")
 
-    create_database(test_db_url)
-    logger.info(f"Test database {test_db_url} created.")
+    create_database(PG_URL)
+    logger.info(f"Test database {PG_URL} created.")
 
     yield
 
-    drop_database(test_db_url)
+    drop_database(PG_URL)
     logger.info("Test database dropped")
 
 
@@ -91,7 +91,9 @@ def create_test_database():
 
 
 def run_migrations(connection: Connection):
-    config = alembic_config
+    config = Config("app/alembic.ini")
+    config.set_main_option("script_location", "../alembic")
+    config.set_main_option("sqlalchemy.url", PG_URL)
     script = ScriptDirectory.from_config(config)
 
     def upgrade(rev, context):
@@ -106,7 +108,6 @@ def run_migrations(connection: Connection):
             context.run_migrations()
 
 
-@pytest.fixture(scope="session")
 def event_loop():
     """Create an event loop for the test session."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
@@ -115,7 +116,7 @@ def event_loop():
 
 
 @pytest.fixture
-async def db_engine(create_test_database):
+async def db_engine(event_loop, create_test_database):
     engine = create_async_engine(
         PG_URL,
         echo=True,
@@ -128,7 +129,7 @@ async def db_engine(create_test_database):
 
 
 # This is a spare fixture
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="function", autouse=True)
 async def db_session_committed():
     """This db session is only for the test cases which need data to be committed into db"""
     async with get_db_session() as session:
@@ -147,7 +148,6 @@ async def db_session(db_engine):
     session = AsyncSession(
         bind=connection, expire_on_commit=False, future=True, autoflush=False
     )
-
     await connection.begin_nested()
 
     @event.listens_for(session.sync_session, "after_transaction_end")
@@ -160,8 +160,6 @@ async def db_session(db_engine):
             connection.sync_connection.begin_nested()
 
     yield session
-
     if session.in_transaction():  # pylint: disable=no-member
         await transaction.rollback()
-
     await connection.close()

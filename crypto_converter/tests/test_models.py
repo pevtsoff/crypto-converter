@@ -7,7 +7,7 @@ from sqlalchemy import select
 
 
 @pytest.mark.asyncio
-async def test_model_creation(db_session):
+async def test_model_creation(db_engine, db_session):
     session = db_session
     ticker = BinanceTickersModel(
         ticker_name="btcusdt",
@@ -20,6 +20,7 @@ async def test_model_creation(db_session):
     stmt = select(BinanceTickersModel).where(
         BinanceTickersModel.ticker_name == "btcusdt"
     )
+
     result = await session.execute(stmt)
     t = result.scalars().first()
-    print(t)
+    assert t is not None
