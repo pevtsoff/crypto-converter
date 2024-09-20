@@ -17,10 +17,11 @@ async def test_model_creation(db_engine, db_session_2, event_loop):
     )
     ticker.ticker_data.append(ticker_data)
     session.add(ticker)
+    session.add(ticker_data)
+    await session.commit()
     stmt = select(BinanceTickersModel).where(
         BinanceTickersModel.ticker_name == "btcusdt"
     )
-    # session.commit()
     result = await session.execute(stmt)
     t = result.scalars().first()
     assert t is not None

@@ -141,9 +141,7 @@ async def db_engine(create_test_database):
 async def db_session_2(db_engine, event_loop):
     """This db session is only for the test cases which need data to be committed into db"""
     connection = await db_engine.connect()
-    session = AsyncSession(
-        bind=connection, expire_on_commit=False, future=True, autoflush=False
-    )
+    session = AsyncSession(bind=connection, expire_on_commit=False, autoflush=False)
 
     yield session
 
