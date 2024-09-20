@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
     AsyncConnection,
 )
-from sqlalchemy.orm import declarative_base
+
 from crypto_converter.common.common import configure_logger
 from crypto_converter.common.settings import (
     PG_URL,
@@ -20,7 +20,7 @@ from crypto_converter.common.settings import (
 logger = configure_logger(__name__)
 logger.info("Connecting to database...")
 
-Base = declarative_base()
+
 engine = create_async_engine(
     PG_URL,
     query_cache_size=SQL_ALCHEMY_CACHE_SIZE,

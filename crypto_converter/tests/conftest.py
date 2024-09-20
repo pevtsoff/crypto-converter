@@ -14,7 +14,7 @@ from crypto_converter.common.common import logger
 from crypto_converter.common.settings import PG_URL
 from fastapi.testclient import TestClient
 from argparse import Namespace
-from crypto_converter.database.db import get_db_session, Base
+from crypto_converter.database.db_models import Base
 from crypto_converter.api.app import create_fastapi_app
 
 
@@ -120,20 +120,35 @@ async def db_engine(create_test_database):
         PG_URL,
         echo=True,
     )
+    # async with engine.begin() as conn:
+    #     await conn.run_sync(run_migrations)
+    #     # await conn.run_sync(Base.metadata.create_all)
+
     async with engine.begin() as conn:
-        await conn.run_sync(run_migrations)
-        # await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
 
     return engine
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+
+    engine.dispose()
 
 
 # This is a spare fixture
 @pytest.fixture(scope="function")
-async def db_session_committed():
+async def db_session_2(db_engine, event_loop):
     """This db session is only for the test cases which need data to be committed into db"""
-    async with get_db_session() as session:
-        async with session.begin():
-            yield session
+    connection = await db_engine.connect()
+    session = AsyncSession(
+        bind=connection, expire_on_commit=False, future=True, autoflush=False
+    )
+
+    yield session
+
+    connection.close()
+    session.close()
 
 
 # this is the main test fixture for test using database
