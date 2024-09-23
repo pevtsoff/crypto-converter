@@ -8,6 +8,8 @@ from sqlalchemy import select
 
 @pytest.mark.asyncio
 async def test_model_creation(db_engine, db_session, event_loop):
+    """Tests model creation and one to many relationship for ticker and ticker data"""
+
     session = db_session
     # test data
     test_ticker_name = "btcusdt"
