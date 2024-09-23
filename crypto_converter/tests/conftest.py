@@ -120,9 +120,6 @@ async def db_engine(create_test_database):
         PG_URL,
         echo=True,
     )
-    # async with engine.begin() as conn:
-    #     await conn.run_sync(run_migrations)
-    #     # await conn.run_sync(Base.metadata.create_all)
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -134,19 +131,6 @@ async def db_engine(create_test_database):
         await conn.run_sync(Base.metadata.drop_all)
 
     engine.dispose()
-
-
-# This is a spare fixture
-@pytest.fixture(scope="function")
-async def db_session_2(db_engine, event_loop):
-    """This db session is only for the test cases which need data to be committed into db"""
-    connection = await db_engine.connect()
-    session = AsyncSession(bind=connection, expire_on_commit=False, autoflush=False)
-
-    yield session
-
-    connection.close()
-    session.close()
 
 
 # this is the main test fixture for test using database
