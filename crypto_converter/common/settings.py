@@ -31,6 +31,3 @@ BINANCE_STREAM_URL = BINANCE_STREAM_BASE_URL + BINANCE_STREAM_NAME
 
 exchange_api_host = os.getenv("EXCHANGE_API_HOST", "0.0.0.0")
 exchange_api_port = os.getenv("EXCHANGE_API_PORT", 8000)
-
-UVICORN_WORKERS = int(os.getenv("UVICORN_WORKERS", 1))
-DEV_MODE = bool(os.getenv("DEV_MODE", True))

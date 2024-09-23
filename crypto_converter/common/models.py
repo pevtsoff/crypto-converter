@@ -116,3 +116,14 @@ class BinanceTickerAggregationInfoResponse(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+
+class DetailMessage(BaseModel):
+    errors: Any  # json errors, primarily validation errors
+    body: Any = None
+    status_code: int
+    error_codes: list[str] | None = None
+
+
+class ErrorResponse(BaseModel):
+    detail: DetailMessage
