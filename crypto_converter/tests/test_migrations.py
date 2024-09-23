@@ -31,8 +31,7 @@ def test_migrations_stairway(clean_migrations, revision: Script, create_test_dat
 
 
 @pytest.mark.asyncio
-async def test_migration_tables_created(create_test_database):
-    # Create an asynchronous engine
+async def test_migration_tables_created(create_test_database, event_loop):
     engine = create_async_engine(
         PG_URL,
         echo=True,
