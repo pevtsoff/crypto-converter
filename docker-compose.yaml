@@ -16,7 +16,8 @@ x-base-python: &x-base-python
     - main
   volumes:
     - .:/usr/src/app
-
+  healthcheck:
+    test: ./wait-for.sh postgres:5432 -- echo "PostgreSQL is up and running!"
 
 services:
   api:
