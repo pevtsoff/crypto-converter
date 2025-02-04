@@ -28,7 +28,7 @@ def get_alembic_config():
     config = Config(
         file_=cmd_opts.config, ini_section=cmd_opts.name, cmd_opts=cmd_opts
     )  # pylint: disable=E1101
-    config.set_main_option("script_location", "../alembic")
+    config.set_main_option("script_location", "./alembic")
     config.set_main_option("sqlalchemy.url", str(PG_URL) + "?async_fallback=true")
 
     return config

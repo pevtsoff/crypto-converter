@@ -1,6 +1,6 @@
 services:
   api:
-    command: sh -c "pytest crypto_converter/tests/test_models.py"
+    command: sh -c "pytest crypto_converter/tests"
     networks:
       - main
     container_name: test-${TAG}
