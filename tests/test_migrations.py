@@ -9,7 +9,7 @@ from crypto_converter.database.db_models import (
     BinanceTickerAggregatedData,
     BinanceTickersModel,
 )
-from crypto_converter.tests.conftest import alembic_config, run_migrations
+from tests.conftest import alembic_config, run_migrations
 from crypto_converter.common.settings import PG_URL
 
 
