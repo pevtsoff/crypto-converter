@@ -9,7 +9,7 @@
 
 ## Run tests
 ```shell
-docker compose -f docker-compose-test up
+./run_tests
 ```
 
 ## Request examples:
