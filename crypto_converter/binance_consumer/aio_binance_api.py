@@ -78,20 +78,14 @@ async def flush_tickers_to_db(tickers: list):
     tickers_objects = []
     start = time.time()
     async with get_db_session() as session, transaction(session):
+        tickers_query = select(BinanceTickersModel)
+        existing_tickers = await session.execute(select(BinanceTickersModel))
+        existing_tickers_dict = {ticker.ticker_name: ticker for ticker in existing_tickers.scalars()}
+
         for tick_name, data in tickers.items():
             if data["ticker_name"]:
 
-                stmt = (
-                    select(BinanceTickersModel)
-                    # .options(
-                    # selectinload(
-                    # BinanceTickersModel.ticker_data)
-                    # )
-                    # This is a greenlet error fix for lazy load issue
-                    .where(BinanceTickersModel.ticker_name == data["ticker_name"])
-                )
-
-                ticker = (await session.execute(stmt)).scalars().first()
+                ticker = existing_tickers_dict.get(data["ticker_name"])
 
                 if ticker is None:
                     ticker = BinanceTickersModel(ticker_name=data["ticker_name"])
